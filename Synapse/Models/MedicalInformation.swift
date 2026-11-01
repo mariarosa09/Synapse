@@ -1,110 +1,69 @@
 //
-//  MedicalIformation.swift
+//  MedicalInformation.swift
 //  Synapse
 //
-//  Created by Mac-LAB on 9/10/26.
+//  A medical record: a row in public.medical_records plus its attachments
+//  (embedded from public.medical_record_attachments when fetched).
 //
 
 import Foundation
-import FirebaseFirestore
 
-// MARK: - Basic Information (allergies & medical conditions)
-
-enum BasicInfoKind: String, CaseIterable, Identifiable {
-    case allergy, condition
-
-    var id: String { rawValue }
-    var title: String { self == .allergy ? "Allergy" : "Medical Condition" }
-}
-
-struct BasicInformationModel: Identifiable {
-    var id: UUID = UUID()
-    var kind: BasicInfoKind = .allergy
-    var title: String = ""
-    var startDate: Date = .now
-    var endDate: Date? = nil
-    var active: Bool = true
-    var notes: String = ""
-
-    init(id: UUID = UUID(), kind: BasicInfoKind = .allergy, title: String = "", startDate: Date = .now,
-         endDate: Date? = nil, active: Bool = true, notes: String = "") {
-        self.id = id
-        self.kind = kind
-        self.title = title
-        self.startDate = startDate
-        self.endDate = endDate
-        self.active = active
-        self.notes = notes
-    }
-
-    init?(dictionary: [String: Any]) {
-        guard let idString = dictionary["id"] as? String, let uuid = UUID(uuidString: idString) else { return nil }
-        self.id = uuid
-        self.kind = BasicInfoKind(rawValue: dictionary["kind"] as? String ?? "") ?? .allergy
-        self.title = dictionary["title"] as? String ?? ""
-        self.startDate = (dictionary["startDate"] as? Timestamp)?.dateValue() ?? .now
-        self.endDate = (dictionary["endDate"] as? Timestamp)?.dateValue()
-        self.active = dictionary["active"] as? Bool ?? true
-        self.notes = dictionary["notes"] as? String ?? ""
-    }
-
-    var dictionary: [String: Any] {
-        var data: [String: Any] = [
-            "id": id.uuidString,
-            "kind": kind.rawValue,
-            "title": title,
-            "startDate": Timestamp(date: startDate),
-            "active": active,
-            "notes": notes
-        ]
-        if let endDate { data["endDate"] = Timestamp(date: endDate) }
-        return data
-    }
-}
-
-// MARK: - Medical records
-
-struct MedicalInformation: Identifiable {
+nonisolated struct MedicalInformation: Identifiable, Codable, Sendable, Equatable {
     let id: UUID
     var title: String = ""
-    var date: Date = .now
-    var file: [String] = []
-    var notes: String = "Notes"
-    
-    init(id: UUID = UUID(), title: String = "", date: Date = .now, file: [String] = [], notes: String = "Notes") {
+    var date: Date = Calendar.current.startOfDay(for: .now)
+    /// Free-text category, e.g. "Lab result", "Prescription", "Imaging".
+    var category: String = ""
+    var notes: String = ""
+    /// Read-only here: attachments are written through AttachmentController.
+    var attachments: [MedicalAttachment] = []
+
+    init(id: UUID = UUID(), title: String = "", date: Date = Calendar.current.startOfDay(for: .now),
+         category: String = "", notes: String = "", attachments: [MedicalAttachment] = []) {
         self.id = id
         self.title = title
         self.date = date
-        self.file = file
+        self.category = category
         self.notes = notes
+        self.attachments = attachments
     }
-    
-    init?(dictionary: [String: Any]) {
-        if let idString = dictionary["id"] as? String, let uuid = UUID(uuidString: idString) {
-            self.id = uuid
-        } else {
-            self.id = UUID()
-        }
-        
-        self.title = dictionary["title"] as? String ?? ""
-        
-        if let timestamp = dictionary["date"] as? Timestamp {
-            self.date = timestamp.dateValue()
-        } else {
-            self.date = .now
-        }
-        
-        self.file = dictionary["file"] as? [String] ?? []
-        self.notes = dictionary["notes"] as? String ?? "Notes"
+
+    /// Matches the title, category, notes, date or any attachment's file name.
+    func matches(search query: String) -> Bool {
+        let q = query.trimmed
+        guard !q.isEmpty else { return true }
+        let fields = [title, category, notes,
+                      date.formatted(date: .abbreviated, time: .omitted),
+                      date.formatted(date: .long, time: .omitted)] + attachments.map(\.fileName)
+        return fields.contains { $0.localizedCaseInsensitiveContains(q) }
     }
-    
-    var dictionary: [String: Any] {
-        return [
-            "id": id.uuidString,
-            "title": title,
-            "date": Timestamp(date: date),
-            "file": file,
-            "notes": notes
-        ]
+
+    // MARK: - Supabase coding
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, category, notes
+        case date = "record_date"
+        case attachments = "medical_record_attachments"
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(UUID.self, forKey: .id)
+        title = try c.decodeIfPresent(String.self, forKey: .title) ?? ""
+        date = DBDate.day(from: try c.decodeIfPresent(String.self, forKey: .date)) ?? Calendar.current.startOfDay(for: .now)
+        category = try c.decodeIfPresent(String.self, forKey: .category) ?? ""
+        notes = try c.decodeIfPresent(String.self, forKey: .notes) ?? ""
+        let files = try c.decodeIfPresent([MedicalAttachment].self, forKey: .attachments) ?? []
+        attachments = files.sorted { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
+    }
+
+    /// Attachments are never sent with the record row; user_id comes from the database default.
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(title, forKey: .title)
+        try c.encode(DBDate.dayString(date), forKey: .date)
+        try c.encode(category, forKey: .category)
+        try c.encode(notes, forKey: .notes)
     }
 }

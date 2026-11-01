@@ -6,7 +6,7 @@
 import Foundation
 
 /// All / Active / Inactive filter used by Basic Information and Medicines.
-enum StatusFilter: String, CaseIterable, Identifiable {
+nonisolated enum StatusFilter: String, CaseIterable, Identifiable {
     case all, active, inactive
 
     var id: String { rawValue }
