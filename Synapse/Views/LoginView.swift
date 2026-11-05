@@ -4,7 +4,7 @@
 //
 //  Created by Mac-LAB on 8/25/26.
 //
-//  Email + password login through Supabase Auth (LoginController), plus "Continue with Apple /
+//  Email + password login through Supabase Auth (LoginController), plus "Continue with 
 //  Google". Accounts that haven't verified their email are sent a fresh code and taken to the
 //  OTP screen.
 //
@@ -135,11 +135,6 @@ struct SocialLoginSection: View {
             }
 
             HStack(spacing: 12) {
-                socialButton(.apple) {
-                    Image(systemName: "apple.logo")
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(.black)
-                }
                 socialButton(.google) {
                     GoogleLogo()
                 }

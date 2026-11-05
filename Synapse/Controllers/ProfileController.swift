@@ -81,8 +81,12 @@ final class ProfileController {
     func uploadPhoto(data: Data, session: SessionController) async -> Bool {
         clearMessages()
         guard let uid = currentUserID(session) else { errorMessage = "You need to be logged in."; return false }
-        guard let image = UIImage(data: data),
-              let jpeg = Self.resized(image, maxSide: 800).jpegData(compressionQuality: 0.8) else {
+        guard let image = UIImage(data: data) else {
+            errorMessage = "That image couldn't be read."
+            return false
+        }
+        let resizedImage = Self.resized(image, maxSide: 800)
+        guard let jpeg = resizedImage.jpegData(compressionQuality: 0.8) else {
             errorMessage = "That image couldn't be read."
             return false
         }
@@ -103,11 +107,15 @@ final class ProfileController {
                 _ = try? await bucket.remove(paths: [newPath])   // don't leave an orphan behind
                 throw error
             }
+            // The database now points at the new file: Home, Profile and Edit Profile switch to it right away,
+            // even if reloading the profile or signing the URL takes a moment (or fails).
+            session.avatarChanged(path: newPath, image: UIImage(data: jpeg) ?? resizedImage)
+            await session.refreshAvatarURL(force: true)
+            // Only now that the new picture is in place is the previous file deleted.
             if let oldPath, !oldPath.isEmpty, oldPath != newPath {
                 _ = try? await bucket.remove(paths: [oldPath])
             }
             await session.reloadProfile()
-            await session.refreshAvatarURL()
             successMessage = oldPath == nil ? "Profile picture uploaded." : "Profile picture replaced."
             return true
         } catch {
@@ -131,8 +139,8 @@ final class ProfileController {
                 .update(["avatar_path": AnyJSON.null], returning: .minimal)
                 .eq("id", value: uid)
                 .execute()
+            session.avatarChanged(path: nil, image: nil)     // every screen shows the default picture at once
             await session.reloadProfile()
-            await session.refreshAvatarURL()
             successMessage = "Profile picture removed."
             return true
         } catch {
@@ -272,12 +280,6 @@ final class ProfileController {
             for table in [Table.medicalRecords, Table.basicInformation, Table.medicines, Table.appointments] {
                 try await supabase.from(table).delete(returning: .minimal).eq("user_id", value: uid).execute()
             }
-
-            // 3. Personal details collected during onboarding.
-            try await supabase.from(Table.profiles)
-                .update(["sex": AnyJSON.null, "blood_group": AnyJSON.null, "birthdate": AnyJSON.null], returning: .minimal)
-                .eq("id", value: uid)
-                .execute()
 
             await session.reloadProfile()
             await session.medicalRecords.reload()

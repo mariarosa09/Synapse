@@ -20,7 +20,8 @@ struct HomeView: View {
                 ProfileContainer(name: controller.displayName(for: session.profile),
                                  ageText: controller.ageText(for: session.profile),
                                  bloodTypeText: controller.bloodTypeText(for: session.profile),
-                                 avatarURL: session.avatarURL)
+                                 avatarURL: session.avatarURL,
+                                 avatarImage: session.avatarImage)
                 Spacer().frame(height: 10)
                 HStack {
                     NavigationLink {
@@ -50,10 +51,11 @@ struct ProfileContainer: View {
     let ageText: String
     let bloodTypeText: String
     let avatarURL: URL?
+    var avatarImage: UIImage? = nil
 
     var body: some View {
         HStack(spacing: 20) {
-            AvatarView(url: avatarURL, size: 100)
+            AvatarView(url: avatarURL, localImage: avatarImage, size: 100)
             VStack(alignment: .leading, spacing: 5) {
                 Text(name)
                     .font(.synSection)
