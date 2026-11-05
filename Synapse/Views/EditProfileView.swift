@@ -31,7 +31,7 @@ struct EditProfileView: View {
                 HeadingNoDesc(back: true, title: "Edit Profile")
                 ScrollView {
                     VStack(spacing: 20) {
-                        AvatarView(url: session.avatarURL, size: 130)
+                        AvatarView(url: session.avatarURL, localImage: session.avatarImage, size: 130)
                             .overlay {
                                 if isPhotoWork {
                                     Circle().fill(Color.black.opacity(0.3))

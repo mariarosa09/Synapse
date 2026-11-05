@@ -22,7 +22,8 @@ struct ProfileView: View {
             } label: {
                 ProfileSummary(name: session.profile?.fullName ?? "",
                                email: session.profile?.email ?? "",
-                               avatarURL: session.avatarURL)
+                               avatarURL: session.avatarURL,
+                               avatarImage: session.avatarImage)
             }
             GeneralSettings()
             LogoutButton {
@@ -38,10 +39,11 @@ struct ProfileSummary: View {
     let name: String
     let email: String
     let avatarURL: URL?
+    var avatarImage: UIImage? = nil
 
     var body: some View {
         VStack(spacing: 20) {
-            AvatarView(url: avatarURL, size: 150)
+            AvatarView(url: avatarURL, localImage: avatarImage, size: 150)
                 .overlay(alignment: .bottomTrailing) {
                     Image(systemName: "pencil.circle.fill")
                         .font(.system(size: 32))

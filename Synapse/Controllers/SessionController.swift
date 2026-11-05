@@ -24,6 +24,9 @@ final class SessionController {
     var profile: UserProfile?
     /// Signed URL of the profile picture (private bucket). nil = show the default picture.
     var avatarURL: URL?
+    /// The picture the user just chose, kept in memory so Home, Profile and Edit Profile change at once
+    /// (no network wait) and as a fallback if the signed URL can't be loaded. Dropped when the stored path changes.
+    var avatarImage: UIImage?
     /// A one-off message for the login screen (for example after an account was removed).
     var notice: String?
     /// Set while the delete-account flow is running so the profile loader doesn't "recover" the account.
@@ -45,6 +48,8 @@ final class SessionController {
     @ObservationIgnored private var activeUserID: UUID?
     @ObservationIgnored private var dataStarted = false
     @ObservationIgnored private var avatarURLPath: String?
+    @ObservationIgnored private var avatarImagePath: String?
+    @ObservationIgnored private var avatarTask: Task<Void, Never>?
     @ObservationIgnored private var avatarURLExpiry: Date?
 
     var userID: UUID? { activeUserID }
@@ -235,7 +240,15 @@ final class SessionController {
     private func apply(profile loaded: UserProfile) {
         let photoChanged = loaded.avatarPath != profile?.avatarPath
         profile = loaded
-        if photoChanged || avatarURLExpired { Task { await refreshAvatarURL() } }
+        // A locally kept picture only belongs to the path it was uploaded to.
+        if loaded.avatarPath != avatarImagePath {
+            avatarImage = nil
+            avatarImagePath = nil
+        }
+        if photoChanged || avatarURLExpired {
+            avatarTask?.cancel()
+            avatarTask = Task { await refreshAvatarURL() }
+        }
 
         if loaded.onboardingComplete {
             startDataIfNeeded(uid: loaded.id)
@@ -252,14 +265,29 @@ final class SessionController {
         return avatarURLExpiry.timeIntervalSinceNow < 60 * 60
     }
 
-    func refreshAvatarURL() async {
+    /// Called right after the profile picture was uploaded, replaced or removed and the database row was updated.
+    /// Every screen switches to the new picture immediately instead of waiting for a reload.
+    func avatarChanged(path: String?, image: UIImage?) {
+        profile?.avatarPath = path
+        avatarImage = image
+        avatarImagePath = image == nil ? nil : path
+        if path == nil || path != avatarURLPath {
+            // The previous signed URL points at the old file.
+            avatarURL = nil
+            avatarURLPath = nil
+            avatarURLExpiry = nil
+        }
+    }
+
+    /// Signs the stored picture path (private bucket). `force` ignores a still-valid URL for the same path.
+    func refreshAvatarURL(force: Bool = false) async {
         guard let path = profile?.avatarPath, !path.isEmpty else {
             avatarURL = nil
             avatarURLPath = nil
             avatarURLExpiry = nil
             return
         }
-        if path == avatarURLPath, avatarURL != nil, !avatarURLExpired { return }
+        if !force, path == avatarURLPath, avatarURL != nil, !avatarURLExpired { return }
         do {
             let url = try await supabase.storage.from(Bucket.avatars)
                 .createSignedURL(path: path, expiresIn: Bucket.signedURLLifetime)
@@ -295,6 +323,9 @@ final class SessionController {
         avatarURL = nil
         avatarURLPath = nil
         avatarURLExpiry = nil
+        avatarImage = nil
+        avatarImagePath = nil
+        avatarTask?.cancel()
         dataStarted = false
         settings.stop()
         medicines.stop()
