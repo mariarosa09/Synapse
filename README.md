@@ -1,6 +1,10 @@
-# Synapse
+<p align="center">
+  <img src="docs/logo.png" alt="Synapse logo" width="160">
+</p>
 
-**Your personal medical assistant for iPhone.**
+<h1 align="center">Synapse</h1>
+
+<p align="center"><strong>Your personal medical assistant for iPhone.</strong></p>
 
 Synapse keeps your health information in one place. Record your medical history and attach files, track your medicines and appointments, and get reminded when it's time for a dose or a check-up.
 
