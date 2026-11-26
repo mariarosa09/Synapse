@@ -178,7 +178,7 @@ final class SessionController {
             } else {
                 // The sign-up trigger normally creates this row; create it if it is missing.
                 loaded = UserProfile(id: user.id, email: user.email ?? "")
-                // Email sign-up sends firstname / surname; Google and Apple send a full name.
+                // Email sign-up sends firstname / surname; Google sends a full name.
                 let metadata = user.userMetadata
                 let fullName = (metadata["full_name"]?.stringValue ?? metadata["name"]?.stringValue ?? "").trimmed
                 let nameParts = fullName.split(separator: " ", maxSplits: 1).map(String.init)

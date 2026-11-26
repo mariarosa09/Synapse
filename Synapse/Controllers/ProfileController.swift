@@ -24,18 +24,17 @@ final class ProfileController {
         successMessage = nil
     }
 
-    /// The sign-in method of the current account: "email", "google" or "apple".
+    /// The sign-in method of the current account: "email" or "google".
     var signInProvider: String {
         supabase.auth.currentUser?.appMetadata["provider"]?.stringValue ?? "email"
     }
 
-    /// Google / Apple accounts have no Synapse password, so password-confirmed changes don't apply.
+    /// Google accounts have no Synapse password, so password-confirmed changes don't apply.
     var usesPasswordLogin: Bool { signInProvider == "email" }
 
     var providerName: String {
         switch signInProvider {
         case "google": return "Google"
-        case "apple": return "Apple"
         default: return signInProvider.capitalized
         }
     }

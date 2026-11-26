@@ -2,13 +2,13 @@
 //  LoginController.swift
 //  Synapse
 //
-//  Logs in with Supabase Auth: email + password, or Google / Apple. On success SessionController
+//  Logs in with Supabase Auth: email + password, or Google. On success SessionController
 //  reacts to the auth change and swaps the screen. Unverified email accounts are sent a fresh OTP
 //  and routed to the code screen.
 //
-//  Google and Apple use Supabase's OAuth flow in a secure in-app web sheet
-//  (ASWebAuthenticationSession), so no extra SDK is needed. Each provider must be enabled in
-//  Supabase (see supabase/SETUP.md, "Google and Apple sign-in").
+//  Google uses Supabase's OAuth flow in a secure in-app web sheet
+//  (ASWebAuthenticationSession), so no extra SDK is needed. The provider must be enabled in
+//  Supabase (see supabase/SETUP.md, "Google sign-in").
 //
 
 import Foundation
@@ -19,10 +19,10 @@ import Supabase
 @Observable
 final class LoginController {
     enum SocialProvider: String, Identifiable {
-        case apple, google
+        case google
         var id: String { rawValue }
-        var title: String { self == .apple ? "Apple" : "Google" }
-        var supabaseProvider: Provider { self == .apple ? .apple : .google }
+        var title: String { "Google" }
+        var supabaseProvider: Provider { .google }
     }
 
     var model = SignInModel()
@@ -67,7 +67,7 @@ final class LoginController {
         }
     }
 
-    /// "Continue with Google / Apple". New users get a profile from the provider's name and email,
+    /// "Continue with Google". New users get a profile from the provider's name and email,
     /// then continue to "Tell Us About You"; returning users go straight to Home.
     func signIn(with provider: SocialProvider) async {
         guard !isBusy else { return }
@@ -78,8 +78,7 @@ final class LoginController {
         do {
             _ = try await supabase.auth.signInWithOAuth(
                 provider: provider.supabaseProvider,
-                redirectTo: SupabaseConfig.authRedirectURL,
-                scopes: provider == .apple ? "name email" : nil
+                redirectTo: SupabaseConfig.authRedirectURL
             )
         } catch let error as ASWebAuthenticationSessionError where error.code == .canceledLogin {
             // The user closed the sheet; nothing to report.

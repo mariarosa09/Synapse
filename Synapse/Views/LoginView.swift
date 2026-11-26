@@ -118,7 +118,7 @@ struct LoginHeading: View {
     }
 }
 
-/// "or continue with" divider plus the Apple and Google buttons, side by side.
+/// "or continue with" divider plus the Google button.
 struct SocialLoginSection: View {
     var controller: LoginController
     let onSelect: (LoginController.SocialProvider) -> Void

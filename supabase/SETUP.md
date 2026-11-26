@@ -123,15 +123,15 @@ the rate limit is hit and enforces a 60-second resend cooldown.
   **Resolve Package Versions**.
 * Minimum iOS version is unchanged (project setting).
 
-## 6b. Google and Apple sign-in
+## 6b. Google sign-in
 
-The Login screen has **Continue with Apple** and **Continue with Google**. Both open a secure
+The Login screen has **Continue with Google**. It opens a secure
 in-app web sheet (Supabase OAuth). After signing in, the user returns to the app through the
 redirect URL `synapse://login-callback` (set in `SupabaseManager.swift`). New users get a profile
-with the name and email from Google or Apple, then continue to "Tell Us About You". Until a
-provider is enabled, its button shows "…sign-in isn't set up yet".
+with the name and email from Google, then continue to "Tell Us About You". Until the
+provider is enabled, the button shows "…sign-in isn't set up yet".
 
-**Redirect URL (both providers):** Authentication → URL Configuration → Redirect URLs →
+**Redirect URL:** Authentication → URL Configuration → Redirect URLs →
 Add URL → `synapse://login-callback` → Save URLs.
 
 **Google logo on the button:** download the official "G" logo from Google's sign-in branding
@@ -150,18 +150,8 @@ button shows a plain "G" symbol.
 5. While the consent screen is in "Testing", add the Google accounts you test with under
    *Test users*.
 
-**Apple** (needs a paid Apple Developer Program membership):
-1. developer.apple.com → Certificates, IDs & Profiles → **Identifiers**: create a
-   **Services ID** (e.g. `ph.edu.mseuf.synapse.signin`), enable *Sign in with Apple*, and set
-   *Return URLs* to `https://cmgdfrryzdsjmqfqddks.supabase.co/auth/v1/callback`.
-2. **Keys** → create a key with *Sign in with Apple* → download the `.p8` file and note the
-   Key ID and your Team ID.
-3. Supabase → **Authentication → Sign In / Providers → Apple** → enable, enter the Services ID
-   as Client ID, and generate the secret from the Team ID, Key ID and `.p8` key as the form
-   describes. Save. (Apple secrets expire after 6 months; generate a new one then.)
-
-Accounts created with Google or Apple have no Synapse password, so the Change Password and
-Change Email screens explain that the password and email are managed by that provider.
+Accounts created with Google have no Synapse password, so the Change Password and
+Change Email screens explain that the password and email are managed by Google.
 
 ## 7. Deleted accounts (optional server job)
 

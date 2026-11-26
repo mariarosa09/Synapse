@@ -13,7 +13,7 @@ enum SupabaseConfig {
     /// Project URL and public anon key (Dashboard → Project Settings → API).
     /// The anon key is safe to ship: every table and bucket is protected by Row Level Security.
     static let url = URL(string: "https://cmgdfrryzdsjmqfqddks.supabase.co")!
-    /// Where Google / Apple sign-in returns to. Must be listed in Supabase → Authentication →
+    /// Where Google sign-in returns to. Must be listed in Supabase → Authentication →
     /// URL Configuration → Redirect URLs.
     static let authRedirectURL = URL(string: "synapse://login-callback")!
     static let anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNtZ2RmcnJ5emRzam1xZnFkZGtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwODEyMDgsImV4cCI6MjEwODY1NzIwOH0.i-62P_d36lU5IbK7_hCfRFlrAsG8sP8vGxDihIBtgq8"

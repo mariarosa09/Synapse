@@ -222,7 +222,7 @@ declare
   first_name text;
   last_name  text;
 begin
-  -- Email sign-up sends firstname / surname; Google and Apple send full_name (or given / family name).
+  -- Email sign-up sends firstname / surname; Google sends full_name (or given / family name).
   first_name := coalesce(nullif(meta ->> 'firstname', ''), nullif(meta ->> 'given_name', ''),
                          split_part(full_name, ' ', 1));
   last_name  := coalesce(nullif(meta ->> 'surname', ''), nullif(meta ->> 'family_name', ''),
