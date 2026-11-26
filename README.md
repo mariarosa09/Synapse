@@ -6,9 +6,62 @@
 
 <p align="center"><strong>Your personal medical assistant for iPhone.</strong></p>
 
+<p align="center">
+  <img alt="Platform" src="https://img.shields.io/badge/platform-iOS%2026.5%2B-blue">
+  <img alt="Swift" src="https://img.shields.io/badge/Swift-SwiftUI-orange">
+  <img alt="Backend" src="https://img.shields.io/badge/backend-Supabase-3ECF8E">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.0-lightgrey">
+</p>
+
 Synapse keeps your health information in one place. Record your medical history and attach files, track your medicines and appointments, and get reminded when it's time for a dose or a check-up.
 
 > Synapse is a personal organization tool. It does not diagnose, predict health outcomes or give medical advice, and it must not be relied on in an emergency.
+
+---
+
+## Table of contents
+
+- [About](#about)
+- [How the app works](#how-the-app-works)
+- [Features](#features)
+- [Reminders in detail](#reminders-in-detail)
+- [Privacy and security](#privacy-and-security)
+- [Tech stack](#tech-stack)
+- [Project structure](#project-structure)
+- [Getting started](#getting-started)
+- [Database overview](#database-overview)
+- [Troubleshooting](#troubleshooting)
+- [Disclaimer](#disclaimer)
+
+---
+
+## About
+
+Health information is usually scattered: lab results in a drawer, prescriptions in a photo album, appointment dates in a chat, and dosage instructions on a box that has already been thrown away. Synapse brings it together in one app on your iPhone.
+
+With Synapse you can:
+
+- **Keep a medical history.** Store lab results, prescriptions, imaging and other records, each with its own files.
+- **Remember what matters about you.** Your blood group, birthdate, allergies and medical conditions are always one tap away.
+- **Take medicines on time.** Add a medicine once and Synapse reminds you for every dose until the course ends.
+- **Never miss a check-up.** See your appointments on a calendar and get a reminder 5 minutes before each one.
+
+Your data is stored in your own account in the cloud, so it is restored when you log in on another iPhone.
+
+---
+
+## How the app works
+
+1. **Welcome.** A splash screen, then an overview of what Synapse does.
+2. **Create an account.** Enter your name, email and a password. Synapse emails you a **one-time code** to confirm the address. You can also **Continue with Google**.
+3. **Tell Us About You.** A short onboarding: sex, blood group, birthdate, allergies and medical conditions. You only do this once.
+4. **Use the app.** Three tabs:
+
+| Tab | What you find there |
+|---|---|
+| 🏠 **Home** | Your profile card (name, age, blood group), shortcuts to **Medical Records** and **Medicines**, and **Schedule For Today**. Basic Information is opened from the Medical Records screen. |
+| 📅 **Calendar** | A month calendar of your appointments. Add, view, edit and delete them. |
+| 👤 **Profile** | Edit your profile, **Data & Account** (email, password, clear data, delete account), **Notifications** and **Logout**. |
 
 ---
 
@@ -16,20 +69,24 @@ Synapse keeps your health information in one place. Record your medical history 
 
 ### Account and security
 - Sign up with email and password, verified with a **one-time code (OTP)** sent by email. There are no verification links.
-- Log in with email and password, or **Continue with Apple / Google**.
+- Passwords need at least 8 characters, an uppercase letter, a lowercase letter and a special character.
+- Log in with email and password, or **Continue with Google**.
 - Forgot password with an emailed reset code.
-- Change your email (verified with a code) or password.
-- Delete your account; it can be restored by logging in within 30 days.
+- Codes can be resent after a **60-second** cooldown; expired and wrong codes show a clear message.
+- Change your email (verified with a code) or password. Google accounts have no Synapse password, so these forms are replaced by a note.
+- Delete your account; it can be restored by logging in again within **30 days**.
 - Every user can only see and change their own data, enforced by Row Level Security in the database.
 
 ### Profile
 - Edit your name, and upload, replace or remove a profile picture.
-- Onboarding ("Tell Us About You"): sex, blood group, birthdate, allergies and medical conditions.
+- Your age is calculated from your birthdate and shown on the Home screen with your blood group.
 
 ### Medical records
-- Create records with a title, date, category and notes.
-- Attach **photos and documents**: JPG, PNG, HEIC, PDF, Word, Excel, CSV, text and more.
-- Preview attachments in the app, open them in another app, save them to Files, replace or remove them.
+- Create records with a title, date, category (for example *Lab result*, *Prescription*, *Imaging*) and notes.
+- Attach **photos and documents** from Photos or the Files app: JPG, PNG, HEIC, PDF, Word, Excel, Numbers, CSV, text and more.
+- Thumbnails for images and an icon for each file type.
+- Tap a file to preview it in the app (Quick Look). Long-press to **Open With…**, **Save to Files**, **Replace** or **Remove** it.
+- The original file name, type and size are kept.
 - **Search** by title, category, notes, date or file name.
 
 ### Basic information
@@ -38,18 +95,51 @@ Synapse keeps your health information in one place. Record your medical history 
 
 ### Medicines
 - Medication name, dosage, times per day (1–4), intake times, start and end date, and instructions.
-- Activate or deactivate a medicine; filter and search the list.
-- **Reminders** follow the dosage: once daily = 1 notification a day, up to 4 for four times daily. Reminders stop automatically when a medicine is deactivated, deleted or its course ends.
+- If you don't pick times, doses are spread across the day automatically:
+
+  | Times per day | Default times |
+  |---|---|
+  | 1 | 8:00 |
+  | 2 | 8:00, 20:00 |
+  | 3 | 8:00, 14:00, 20:00 |
+  | 4 | Every 4 hours from 8:00 |
+
+- Activate or deactivate a medicine; filter by **All / Active / Inactive** and search the list.
+- Swipe a medicine to edit, delete, activate or deactivate it.
 
 ### Appointments and calendar
-- Title, doctor, location, start and end time, notes and status (Scheduled / Completed / Cancelled).
-- Month calendar with dots on days that have appointments; tap an appointment for its full details, then edit or delete it.
-- **Reminder 5 minutes before** every scheduled appointment.
-- "Schedule For Today" on the Home screen.
+- Title, doctor, location, start and end time, notes and status (**Scheduled / Completed / Cancelled**).
+- Month calendar with dots on days that have appointments. Tap the month name to jump back to today.
+- Tap an appointment for its full details, then edit or delete it.
+- **Schedule For Today** on the Home screen lists today's appointments.
 
-### Settings
+### Settings and data
 - Turn all notifications, medicine reminders or appointment reminders on and off. Settings are saved to your account and restored on every device you log in to.
-- Clear all data.
+- **Clear Data** removes your records, medicines, appointments and basic information but keeps your account.
+- Every delete, clear and logout action asks for confirmation first.
+
+---
+
+## Reminders in detail
+
+Synapse uses local notifications on your iPhone, so reminders arrive even without an internet connection.
+
+- **Medicines:** one notification for each dose, following the times per day (1 to 4). Reminders stop automatically when a medicine is deactivated, deleted, or its end date passes.
+- **Appointments:** one notification **5 minutes before** each *Scheduled* appointment. Completed or cancelled appointments are not reminded.
+- **Always up to date:** editing a medicine or appointment, changing its status, or switching a reminder type off updates the pending notifications immediately. Each reminder has a fixed ID, so you never get duplicates.
+- **iOS limit:** iOS allows an app only 64 pending notifications. Synapse keeps a rolling window: upcoming appointments come first, then the nearest medicine doses over the next 14 days. The window is refilled every time you open the app.
+
+> Tip: open Synapse at least once every few days, so the reminder window stays full.
+
+---
+
+## Privacy and security
+
+- **Your data is yours only.** Every table and storage bucket uses Supabase Row Level Security, so a user can read and change only rows and files that belong to their own account.
+- **Private files.** Profile pictures and attachments are stored in private buckets, in a folder named after your user ID. The app shows them through signed links that expire after a short time.
+- **Verified emails.** Accounts can't reach the app until the email address is confirmed with a code.
+- **No secret keys in the app.** The app only contains Supabase's public *anon* key. The `service_role` key must never be added to the app.
+- **No tracking.** Synapse has no analytics or advertising SDKs.
 
 ---
 
@@ -57,12 +147,13 @@ Synapse keeps your health information in one place. Record your medical history 
 
 | | |
 |---|---|
-| Platform | iOS (iPhone) |
+| Platform | iOS (iPhone), version 1.0 |
 | Language / UI | Swift, SwiftUI |
 | Architecture | **MVC** (Models, Views, Controllers) |
 | Backend | [Supabase](https://supabase.com): Auth, PostgreSQL, Storage |
 | SDK | [supabase-swift](https://github.com/supabase/supabase-swift) 2.55+ (Swift Package Manager) |
 | Notifications | Apple UserNotifications (local notifications) |
+| File preview | Quick Look |
 | Fonts | Graduate, DM Sans |
 
 ---
@@ -82,18 +173,41 @@ Synapse/
 │   │   └── …one controller per screen or feature
 │   ├── Views/                    One file per screen (LoginView, HomeView, CalendarView…)
 │   │   ├── Components/           Shared UI: inputs, buttons, headers, fonts and colors
-│   │   ├── Popups/               Custom pop-ups and a few standalone screens
+│   │   ├── Popups/               The confirmation pop-up used for logout, delete and clear
 │   │   └── Fonts/
 │   └── Assets.xcassets
-└── supabase/
-    ├── schema.sql                Tables, indexes, triggers, RLS and storage policies
-    └── SETUP.md                  Full backend setup guide
+├── supabase/
+│   ├── schema.sql                Tables, indexes, triggers, RLS and storage policies
+│   └── SETUP.md                  Full backend setup guide
+└── docs/
+    └── logo.png                  Logo used in this README
 ```
 
 **How MVC is applied:**
 - **Models** are plain data types that match the database tables.
 - **Views** only show data and forward user actions.
 - **Controllers** do the work: they talk to Supabase, validate input and schedule notifications.
+
+**Screens and their controllers:**
+
+| Screen | Controller(s) |
+|---|---|
+| RootView (chooses the current screen) | SessionController |
+| LoginView | LoginController |
+| CreateAccountView | CreateAccountController |
+| OTPVerificationView | OTPVerificationController |
+| ForgotPasswordView | PasswordResetController |
+| AboutYouView (onboarding) | AboutYouController |
+| HomeView | HomeController, AppointmentController |
+| CalendarView | CalendarController, AppointmentController |
+| MedicinesView | MedicineController |
+| MedicalRecordView, MedicalRecordDetailView | MedicalRecordController, AttachmentController |
+| AttachmentsView | AttachmentController |
+| BasicInformationView | BasicInformationController |
+| ProfileView, EditProfileView, ChangeEmailView, ChangePasswordView, DataAccountView | ProfileController |
+| SettingsView (notifications) | SettingsController |
+
+`NotificationController` schedules every local notification, and `SupabaseManager` holds the single Supabase client.
 
 ---
 
@@ -121,7 +235,7 @@ Xcode downloads the Supabase package automatically. If it doesn't, use **File �
    - edit the email templates so they show the code (`{{ .Token }}`) instead of a link.
 4. Add your own SMTP server (for example Gmail with an App Password) so codes can be sent reliably.
 
-Step-by-step instructions, ready-to-paste email templates and Google/Apple sign-in setup are in **[`supabase/SETUP.md`](supabase/SETUP.md)**.
+Step-by-step instructions, ready-to-paste email templates and Google sign-in setup are in **[`supabase/SETUP.md`](supabase/SETUP.md)**.
 
 ### 3. Connect the app to your project
 In `Synapse/Controllers/SupabaseManager.swift`, set your project's values from **Project Settings → API**:
@@ -163,8 +277,10 @@ Files are stored in a folder named after the user's ID and shown through short-l
 | "A server with the specified hostname could not be found" | The Supabase project is **paused**. Free projects pause after about a week without use. Open the dashboard and click **Restore project**. |
 | "Error sending confirmation email" | The SMTP settings are wrong. Check the username, the App Password and the sender email in **Authentication → Emails → SMTP Settings**. |
 | The verification email contains a link instead of a code | Edit the email templates to use `{{ .Token }}` (see `supabase/SETUP.md`). |
-| Google / Apple button says "not set up yet" | Enable the provider in **Authentication → Sign In / Providers** (see `supabase/SETUP.md`). |
+| "Continue with Google" says "not set up yet" | Enable the Google provider in **Authentication → Sign In / Providers** (see `supabase/SETUP.md`). |
+| No new code arrives when I tap Resend | Wait for the 60-second cooldown to end. Supabase also rate-limits emails; check the spam folder. |
 | Reminders don't appear | Allow notifications for Synapse in iOS **Settings → Notifications**, and check the toggles in the app's **Profile → Notifications**. |
+| Some medicine reminders are missing far in the future | Open the app: the 64-notification window is refilled every time Synapse becomes active. |
 
 ---
 
