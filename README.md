@@ -7,10 +7,25 @@
 <p align="center"><strong>Your personal medical assistant for iPhone.</strong></p>
 
 <p align="center">
-  <img alt="Platform" src="https://img.shields.io/badge/platform-iOS%2026.5%2B-blue">
-  <img alt="Swift" src="https://img.shields.io/badge/Swift-SwiftUI-orange">
-  <img alt="Backend" src="https://img.shields.io/badge/backend-Supabase-3ECF8E">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0-lightgrey">
+  <img alt="Platform: iOS 26.5+" src="https://img.shields.io/badge/platform-iOS%2026.5%2B-000000?logo=apple&logoColor=white">
+  <img alt="Swift 5" src="https://img.shields.io/badge/Swift-5-F05138?logo=swift&logoColor=white">
+  <img alt="SwiftUI" src="https://img.shields.io/badge/UI-SwiftUI-0D96F6?logo=swift&logoColor=white">
+  <img alt="Xcode 26+" src="https://img.shields.io/badge/Xcode-26%2B-147EFB?logo=xcode&logoColor=white">
+  <img alt="Architecture: MVC" src="https://img.shields.io/badge/architecture-MVC-8A2BE2">
+</p>
+
+<p align="center">
+  <img alt="Backend: Supabase" src="https://img.shields.io/badge/backend-Supabase-3ECF8E?logo=supabase&logoColor=white">
+  <img alt="Database: PostgreSQL" src="https://img.shields.io/badge/database-PostgreSQL-4169E1?logo=postgresql&logoColor=white">
+  <img alt="supabase-swift 2.55.5" src="https://img.shields.io/badge/supabase--swift-2.55.5-3ECF8E">
+  <img alt="Swift Package Manager" src="https://img.shields.io/badge/SPM-compatible-F05138?logo=swift&logoColor=white">
+</p>
+
+<p align="center">
+  <img alt="Auth: Email OTP and Google" src="https://img.shields.io/badge/auth-Email%20OTP%20%7C%20Google-4285F4?logo=google&logoColor=white">
+  <img alt="Security: Row Level Security" src="https://img.shields.io/badge/security-Row%20Level%20Security-2E7D32">
+  <img alt="Notifications: local" src="https://img.shields.io/badge/notifications-local-FF9500">
+  <img alt="Version 1.0" src="https://img.shields.io/badge/version-1.0-blue">
 </p>
 
 Synapse keeps your health information in one place. Record your medical history and attach files, track your medicines and appointments, and get reminded when it's time for a dose or a check-up.
@@ -59,9 +74,9 @@ Your data is stored in your own account in the cloud, so it is restored when you
 
 | Tab | What you find there |
 |---|---|
-| 🏠 **Home** | Your profile card (name, age, blood group), shortcuts to **Medical Records** and **Medicines**, and **Schedule For Today**. Basic Information is opened from the Medical Records screen. |
-| 📅 **Calendar** | A month calendar of your appointments. Add, view, edit and delete them. |
-| 👤 **Profile** | Edit your profile, **Data & Account** (email, password, clear data, delete account), **Notifications** and **Logout**. |
+| 🏠&nbsp;**Home** | Your profile card (name, age, blood group), shortcuts to **Medical Records** and **Medicines**, and **Schedule For Today**. Basic Information is opened from the Medical Records screen. |
+| 📅&nbsp;**Calendar** | A month calendar of your appointments. Add, view, edit and delete them. |
+| 👤&nbsp;**Profile** | Edit your profile, **Data & Account** (email, password, clear data, delete account), **Notifications** and **Logout**. |
 
 ---
 
